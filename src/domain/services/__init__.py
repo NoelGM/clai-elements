@@ -1,0 +1,4 @@
+STATUS_IDLE: int = 0
+STATUS_RUNNING: int = 1
+STATUS_ERROR: int = -1
+STATUS_DONE: int = 2

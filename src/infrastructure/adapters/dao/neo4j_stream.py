@@ -35,6 +35,8 @@ class Neo4jStream(DataStream):
         parameters = args.get("parameters", {})
         node = args.get("node")
         query = f"CREATE (n:{node} {data}) RETURN n;"
+        for key in data.keys():
+            query = query.replace(f"'{key}'", f"{key}")
         if not isinstance(data, dict):
             self.exception = "Error: Input data must be typed as dict."
             return False
@@ -54,18 +56,15 @@ class Neo4jStream(DataStream):
             args: dict,
             comparator: str = '=='
     ) -> bool:
-
         label = args.get("label")
         match_params = args.get("match_params", {})
         comp_map = {"==": "=", ">": ">", "<": "<="}  # ajustar según necesidades
         operator = comp_map.get(comparator, "=")
-
         cypher = (
             f"MATCH (n:{label} {{{field}: $old}}) "
             f"SET n.{field} = $new "
         )
         params = {**match_params, "old": old, "new": new}
-
         try:
             with self.driver.session() as session:
                 session.run(cypher, **params)

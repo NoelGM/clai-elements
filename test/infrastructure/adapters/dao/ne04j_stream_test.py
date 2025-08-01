@@ -11,9 +11,9 @@ adapter: Neo4jStream = Neo4jStream(
 
 def test_pull():
 
-    # Test scene
+    # Test scenario
 
-    pull_params = {
+    params = {
         "node": "Patient",
         "identifier": "AC1743089727161",
         "topic": "AllergyIntolerance",
@@ -29,7 +29,7 @@ def test_pull():
 
     #   Observation
 
-    result: DataFrame = adapter.pull(pull_params)
+    result: DataFrame = adapter.pull(params)
 
     observed: dict = {
         'len': len(result)
@@ -42,7 +42,9 @@ def test_pull():
 
 def test_push_positive():
 
-    push_params = {
+    # Test scenario
+
+    params = {
         "node": "Patient",
     }
 
@@ -51,6 +53,32 @@ def test_push_positive():
         "name": "John Doe",
     }
 
-    result: bool = adapter.push(data, push_params)
+    #   Observation
+
+    result: bool = adapter.push(data, params)
+
+    #   Check
 
     assert result
+
+
+def test_push_negative():
+
+    # Test scenario
+
+    params = {
+        "node": "fakeNode",
+    }
+
+    data = {
+        "id": "AC1743089727162",
+        "name": "John Doe",
+    }
+
+    #   Observation
+
+    result: bool = adapter.push(data, params)
+
+    #   Check
+
+    assert not result
