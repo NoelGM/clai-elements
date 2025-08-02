@@ -9,7 +9,6 @@ class SyncService(Service, ABC):
 
     def __init__(
             self,
-            name: str,
-            logger: Logger = logging.getLogger('Synchronous service')
+            name: str
     ):
-        super().__init__(name, logger)
+        super().__init__(name)

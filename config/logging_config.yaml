@@ -1,0 +1,63 @@
+loggers:
+  app:
+    log_file: "../logs/app.log"
+    log_level: "INFO"
+    log_format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    log_rotation: "1 week"
+    log_retention: "7 days"
+    log_compression: "zip"
+    category: "app"
+
+  services:
+    log_file: "../logs/services.log"
+    log_level: "INFO"
+    log_format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    log_rotation: "1 week"
+    log_retention: "7 days"
+    log_compression: "zip"
+    category: "services"
+
+  agents:
+    log_file: "../logs/agents.log"
+    log_level: "INFO"
+    log_format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    log_rotation: "1 week"
+    log_retention: "7 days"
+    log_compression: "zip"
+    category: "agents"
+
+  pubmed:
+    log_file: "../logs/pubmed.log"
+    log_level: "INFO"
+    log_format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    log_rotation: "1 week"
+    log_retention: "7 days"
+    log_compression: "zip"
+    category: "pubmed"
+
+  onesaithealthcare:
+    log_file: "../logs/onesaithealthcare.log"
+    log_level: "INFO"
+    log_format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+    log_rotation: "1 week"
+    log_retention: "7 days"
+    log_compression: "zip"
+    category: "onesaithealthcare"
+
+  neo4j_graphrag:
+    log_file: "../logs/neo4j_graphrag.log"
+    log_format: "{time} | {level} | {message}"
+    log_level: DEBUG
+    log_rotation: 1 week
+    log_retention: 1 month
+    log_compression: zip
+    log_filter_by_name: neo4j_graphrag  # Nuevo campo para indicar filtro por nombre del logger
+
+  neo4j:
+    log_file: "../logs/neo4j.log"
+    log_format: "{time} | {level} | {message}"
+    log_level: DEBUG
+    log_rotation: 1 week
+    log_retention: 1 month
+    log_compression: zip
+    log_filter_by_name: neo4j  # Nuevo campo para indicar filtro por nombre del logger

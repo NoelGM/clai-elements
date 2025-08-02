@@ -1,10 +1,9 @@
-import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
-from logging import Logger
 
 from src.domain.ports.dao.data_stream import DataStream
 from src.domain.services import STATUS_IDLE
+from src.logger.logger_config import logger
 
 
 def _job_id() -> int:
@@ -15,12 +14,11 @@ class Service(ABC):
 
     def __init__(
             self,
-            name: str,
-            logger: Logger = logging.getLogger('Service')
+            name: str
     ):
 
         self.name: str = name
-        self._logger: Logger = logger
+        self._logger = logger.bind(category="app")
 
         self.job: int = _job_id()
         self.status: int = STATUS_IDLE
