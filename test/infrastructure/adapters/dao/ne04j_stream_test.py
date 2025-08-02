@@ -1,8 +1,9 @@
 from pandas import DataFrame
 
+from src.domain.ports.dao.data_stream import DataStream
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
 
-adapter: Neo4jStream = Neo4jStream(
+adapter: DataStream = Neo4jStream(
     uri="bolt://localhost:7687",
     user="neo4j",
     password="12345678a"

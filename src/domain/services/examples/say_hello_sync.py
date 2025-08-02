@@ -8,6 +8,8 @@ class SayHelloSync(SyncService):
 
     def run(self, name: str) -> dict:
 
+        self._logger.info(f'Say hello to {name}.')
+
         return {
             "msg": f"hello {name}"
         }

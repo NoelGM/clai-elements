@@ -1,7 +1,5 @@
-import logging
 import threading
 from abc import ABC, abstractmethod
-from logging import Logger
 
 from src.api import RESP202, RESP500
 from src.domain.services import STATUS_RUNNING, STATUS_ERROR
@@ -12,10 +10,9 @@ class AsyncService(Service, ABC):
 
     def __init__(
             self,
-            name: str,
-            logger: Logger = logging.getLogger('Asynchronous service')
+            name: str
     ):
-        super().__init__(name, logger)
+        super().__init__(name)
 
         self.ident: int = 0
         self.native_id: int = 0
