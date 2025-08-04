@@ -22,10 +22,15 @@ class Neo4jStream(DataStream):
         identifier = args.get("identifier")
         result = args.get("result", "text")
         query = f"MATCH (n:{node})-[]-(a:{topic}) where n.{field}='{identifier}' RETURN a.{result} as result"
-        with self.driver.session() as session:
-            result = session.run(query, **parameters)
-            records = [record.data() for record in result]
-        return DataFrame(records)
+        results: DataFrame = DataFrame()
+        try:
+            with self.driver.session() as session:
+                result = session.run(query, **parameters)
+                records = [record.data() for record in result]
+            results = DataFrame(records)
+        except Exception as e:
+            self.exception = f"Error while extracting data from Neo4j: {str(e)}."
+        return results
 
     def push(
             self,

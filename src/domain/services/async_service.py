@@ -10,9 +10,10 @@ class AsyncService(Service, ABC):
 
     def __init__(
             self,
-            name: str
+            name: str,
+            logger_=None
     ):
-        super().__init__(name)
+        super().__init__(name, logger_)
 
         self.ident: int = 0
         self.native_id: int = 0

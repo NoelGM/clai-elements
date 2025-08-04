@@ -1,0 +1,1 @@
+BASE: str = '/clai'
