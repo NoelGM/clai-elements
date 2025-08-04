@@ -1,30 +1,32 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from src.domain.services.data.get_patien_sync import GetPatientSync
-from src.api.model.data.neo4j import get_patient_params
+from src.api.endpoints.data import GROUP
+from src.config.config import config
+from src.domain.services.data.get_sync import GetSync
+from src.api.model.data.neo4j import get_patient_model
 from src.domain.ports.dao.data_stream import DataStream
 from src.domain.services.service import Service
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
 
 router = APIRouter()
 
-@router.post("/patient")
-def get_patient(params=Depends(get_patient_params)):
+@router.post(f"{GROUP}/patient")
+def get_patient(params=get_patient_model):
 
     adapter: DataStream = Neo4jStream(
-        uri="bolt://localhost:7687",
-        user="neo4j",
-        password="12345678a"
+        uri=config.database.neo4j.uri,
+        user=config.database.neo4j.user,
+        password=config.database.neo4j.password
     )
 
     params = {
         "node": "Patient",
-        "identifier": "AC1743089727161",
-        "topic": "AllergyIntolerance",
+        "identifier": params['identifier'],
+        "topic": params['topic'],
         "field": "id",
         "parameters": {}
     }
 
-    service: Service = GetPatientSync(adapter)
+    service: Service = GetSync(adapter)
 
     return service.run(params)

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from src.domain.ports.dao.data_stream import DataStream
 from src.domain.services import STATUS_IDLE
-from src.logger.logger_config import logger
+from src.config.logger_config import logger
 
 
 def _job_id() -> int:
@@ -14,14 +14,17 @@ class Service(ABC):
 
     def __init__(
             self,
-            name: str
+            name: str,
+            logger_ = None
     ):
 
         self.name: str = name
-        self._logger = logger.bind(category="app")
+        self._logger = logger.bind(category="services") if logger_ is None else logger_
 
         self.job: int = _job_id()
         self.status: int = STATUS_IDLE
+
+        self._logger.info(f"Service {self.name} has been instantiated with job id {str(self.job)}.")
 
     @abstractmethod
     def run(self, *args) -> dict:

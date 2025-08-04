@@ -1,4 +1,9 @@
-class Config:
+import os
 
-    def __init__(self):
-        pass
+from dynaconf import Dynaconf
+
+config = Dynaconf(
+    settings_files=[os.environ.get('CONFIG_FILE')],
+    environments=True,
+    env=os.environ.get('ENVIRONMENT')
+)
