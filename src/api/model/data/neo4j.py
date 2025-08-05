@@ -2,14 +2,27 @@ from fastapi import Depends
 from pydantic import BaseModel
 
 
-def _get_patient_params(identifier: str, topic: str):
+def _pull_params(filter_value: str, secondary_node: str):
     return {
-        "identifier": identifier,
-        "topic": topic
+        "filter_value": filter_value,
+        "secondary_node": secondary_node
     }
 
-class _GetPatientModel(BaseModel):
-    identifier: str
-    topic: str
 
-get_patient_model: _GetPatientModel = Depends(_get_patient_params)
+def _push_params(data: str):
+    return {
+        "data": data
+    }
+
+
+class _PullModel(BaseModel):
+    filter_value: str
+    secondary_node: str
+
+
+class _PushModel(BaseModel):
+    data: str
+
+
+pull_model: _PullModel = Depends(_pull_params)
+push_model: _PushModel = Depends(_push_params)

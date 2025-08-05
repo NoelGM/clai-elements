@@ -1,17 +1,41 @@
 from fastapi import APIRouter
 
-from src.api.endpoints.data import GROUP
+from src.api.endpoints.data import GROUP, SYMBOLS
+from src.api.model.data.neo4j import pull_model
 from src.config.config import config
-from src.domain.services.data.get_sync import GetSync
-from src.api.model.data.neo4j import get_patient_model
 from src.domain.ports.dao.data_stream import DataStream
+from src.domain.services.data.pull_sync import PullSync
+from src.domain.services.data.push_sync import PushSync
 from src.domain.services.service import Service
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
 
 router = APIRouter()
 
+@router.get(f"{GROUP}/patient")
+def pull_patient(params=pull_model):
+
+    adapter: DataStream = Neo4jStream(
+        uri=config.database.neo4j.uri,
+        user=config.database.neo4j.user,
+        password=config.database.neo4j.password,
+        symbols=SYMBOLS
+    )
+
+    input_params = {
+        "main_node": "Patient",
+        "secondary_node": params['secondary_node'],
+        "filter_field": "id",
+        "filter_value": params['filter_value'],
+        "parameters": {}
+    }
+
+    service: Service = PullSync(adapter)
+
+    return service.run(input_params)
+
+
 @router.post(f"{GROUP}/patient")
-def get_patient(params=get_patient_model):
+def push_patient(data: dict):
 
     adapter: DataStream = Neo4jStream(
         uri=config.database.neo4j.uri,
@@ -19,14 +43,11 @@ def get_patient(params=get_patient_model):
         password=config.database.neo4j.password
     )
 
-    params = {
+    output_params = {
         "node": "Patient",
-        "identifier": params['identifier'],
-        "topic": params['topic'],
-        "field": "id",
         "parameters": {}
     }
 
-    service: Service = GetSync(adapter)
+    service: Service = PushSync(adapter)
 
-    return service.run(params)
+    return service.run(data, output_params)
