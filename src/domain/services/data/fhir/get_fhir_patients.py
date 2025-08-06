@@ -7,4 +7,4 @@ class GetFHIRPatients(GetFHIRResources):
             self,
             base_url: str
     ):
-        super().__init__(base_url, "Get FHIR Patients", 'Patient')
+        super().__init__("Get FHIR Patients", base_url, 'Patient')

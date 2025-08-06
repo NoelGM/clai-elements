@@ -74,12 +74,6 @@ class Neo4jStream(DataStream):
             args: dict
     ) -> bool:
 
-        #   Check whether data is a dict.
-
-        if not isinstance(data, dict):
-            self.exception = "Error: Input data must be typed as dict."
-            return False
-
         #   Extract method parameters.
 
         parameters = args.get("parameters", {})
@@ -87,14 +81,20 @@ class Neo4jStream(DataStream):
 
         #   Create query.
 
-        query = f"CREATE (n:{node} {{"
+        if isinstance(data, dict):
 
-        for key in data.keys():
-            query += f"{key}: '{str(data.get(key))}',"
+            query = f"CREATE (:{node}:resource {{"
 
-        query = query[:-1]
+            for key in data.keys():
+                query += f"{key}: '{str(data.get(key))}',"
 
-        query += f"}}) RETURN n"
+            query = query[:-1]
+
+            query += f"}})"
+
+        else:
+
+            query = f"CREATE (:{node}:resource {data})"
 
         #   Launch query.
 
@@ -116,7 +116,7 @@ class Neo4jStream(DataStream):
     ) -> bool:
         label = args.get("label")
         match_params = args.get("match_params", {})
-        comp_map = {"==": "=", ">": ">", "<": "<="}  # ajustar según necesidades
+        comp_map = {"==": "=", ">": ">", "<": "<="}
         operator = comp_map.get(comparator, "=")
         cypher = (
             f"MATCH (n:{label} {{{field}: $old}}) "

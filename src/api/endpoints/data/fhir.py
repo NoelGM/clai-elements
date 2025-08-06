@@ -1,9 +1,13 @@
-import requests
-from fastapi import APIRouter
+
+from fastapi import APIRouter, Request
 
 from src.api import RESP500
 from src.api.endpoints.data import GROUP
+from src.api.model.data.fhir import patient_model
 from src.config.config import config
+from src.domain.services.data.fhir.get_fhir_patients import GetFHIRPatients
+from src.domain.services.data.fhir.get_fhir_resources import GetFHIRResources
+from src.domain.services.service import Service
 
 router = APIRouter()
 
@@ -11,23 +15,17 @@ SUBGROUP: str = '/fhir'
 
 
 @router.get(f"{GROUP}{SUBGROUP}/Patient")
-def get_patients():
+def get_patients(request: Request, params=patient_model):
 
-    uri: str = config.fhir.uri + '/Patient'
+    token = request.headers.get('Authorization')
 
-    token: str = ''
+    query: str = "".join([f"{key}={params.get(key)}&" for key in list(filter(lambda x: params.get(x) is not None and x != 'id', params.keys()))])
+    query=query[:-1]
 
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/json"
-    }
+    resource_id: str = params.get('id') if params.get('id') is not None else ''
 
-    try:
+    service: GetFHIRResources = GetFHIRPatients(config.fhir.uri)
 
-        response = requests.get(uri, headers=headers)
-        response.raise_for_status()
-        return response.json()
+    response = service.run(token, resource_id=resource_id, query=query)
 
-    except Exception as e:
-
-        return RESP500
+    return response
