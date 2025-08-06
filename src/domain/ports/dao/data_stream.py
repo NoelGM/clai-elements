@@ -11,7 +11,6 @@ class DataStream(ABC):
     """
     Create adapters for persistence, being capable of performing pull, push and update operations.
     """
-
     def __init__(self):
         self.exception: str = ''
 

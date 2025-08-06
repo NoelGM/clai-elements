@@ -4,8 +4,20 @@ default:
       uri: bolt://localhost:7687
       user: neo4j
       password: 12345678a
+  fhir:
+    uri: https://healthcare.cwbyminsait.com/ehrserver/fhir
 
-local:
+local_ngm:
   service:
     host: 127.0.0.1
     port: 5000
+
+local_moa:
+  service:
+    host: 127.0.0.1
+    port: 8080
+
+develop:
+  service:
+    host: https://healthcare.cwbyminsait.com
+    port: 8080
