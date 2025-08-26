@@ -4,8 +4,13 @@ default:
       uri: bolt://localhost:7687
       user: neo4j
       password: 12345678a
+      index_name: fhir_text_large
+      fulltext_index_name: node_text_index
+      embedder_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
   fhir:
     uri: https://healthcare.cwbyminsait.com/ehrserver/fhir
+  dsforms:
+    uri: https://healthcare.cwbyminsait.com/dsforms/fhir/rest
 
 local_ngm:
   service:
@@ -15,7 +20,7 @@ local_ngm:
 local_moa:
   service:
     host: 127.0.0.1
-    port: 8080
+    port: 5000
 
 develop:
   service:
