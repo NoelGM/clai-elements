@@ -1,7 +1,7 @@
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
 
 
-class PatientStream(Neo4jStream):
+class Neo4jPatientStream(Neo4jStream):
 
     def __init__(
             self,

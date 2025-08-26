@@ -57,7 +57,11 @@ _fhir_descriptions: dict = {
 
 _history_descriptions: dict = {
     'pull_patient': """
-        Get data from a patient from the project database stipulating filters and secondary node. TODO: Completa @Martin.
+        Get data from a patient from the project database stipulating filters and secondary node.
+        \n\t- Input: the following parameters:
+        \n\t\t- filter value: is the patient id
+        \n\t\t- secondary node: is the data node to be recovered, for exxample, AllergyIntolerance
+        \n\t- Output: data found in the database.
     """,
     'push_patient': """
         Insert a new patient to the project database given by an string included the json formatted patient data. TODO: Completa @Martin.

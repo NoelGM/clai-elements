@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from langserve import add_routes
 
 from src.api.chains.echo_chain import echo_chain
-from src.api.endpoints.data.dsforms import router as dsforms_router
 from src.api.endpoints.conversion.fhir2neo4j import router as fhir2neo4j_router
-from src.api.endpoints.data.fhir import router as fhir_router
 from src.api.endpoints.data.clinical_history import router as clinical_history_router
+from src.api.endpoints.data.dsforms import router as dsforms_router
+from src.api.endpoints.data.fhir import router as fhir_router
 
 #   Instance main application
 app = FastAPI()
