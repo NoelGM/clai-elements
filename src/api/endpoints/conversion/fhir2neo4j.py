@@ -1,21 +1,28 @@
 from fastapi import APIRouter
 
-from src.domain.services.data.conversion.bundle2neo4j import Bundle2Neo4j
-from src.domain.services.sync_service import SyncService
-from src.infrastructure.adapters.dao.patient_stream import PatientStream
-from src.api.endpoints.conversion import GROUP
+from src.api.endpoints.conversion import GROUP, summaries, descriptions
 from src.config.config import config
 from src.domain.ports.dao.data_stream import DataStream
+from src.domain.services.data.conversion.bundle2neo4j import Bundle2Neo4j
 from src.domain.services.data.push_sync import PushSync
 from src.domain.services.service import Service
-from src.infrastructure.adapters.conversion.fhir.FHIR_to_graph import resource_to_edges, resource_to_node
+from src.domain.services.sync_service import SyncService
+from src.infrastructure.adapters.conversion.fhir.FHIR_to_graph import resource_to_node
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
+from src.infrastructure.adapters.dao.patient_stream import PatientStream
 
 router = APIRouter()
 
+tags: list[str] = ["Data Conversion"]
 
-@router.post(f"{GROUP}/patient")
-def insert_resource(data: dict):
+
+@router.post(
+    f"{GROUP}/patient",
+    tags=tags,
+    summary=summaries['insert_patient'],
+    description=descriptions['insert_patient']
+)
+def insert_patient(data: dict):
 
     resource_type, resource_data = resource_to_node(data)
 
@@ -34,8 +41,13 @@ def insert_resource(data: dict):
 
     return service.run(resource_data, output_params)
 
-@router.post(f"{GROUP}/patients")
-def insert_resources(data: dict):
+@router.post(
+    f"{GROUP}/patients",
+    tags=tags,
+    summary=summaries['insert_patients'],
+    description=descriptions['insert_patients']
+)
+def insert_patients(data: dict):
 
     adapter: DataStream = PatientStream(
         uri=config.database.neo4j.uri,
@@ -54,7 +66,7 @@ def insert_resources(data: dict):
 
     try:
         output_params["patientId"] = data["entry"][0]["resource"]["id"]
-    except Exception:
+    except Exception as e:
         pass
 
     service: Service = PushSync(adapter)

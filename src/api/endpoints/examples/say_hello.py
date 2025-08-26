@@ -9,26 +9,41 @@ from src.domain.services.service import Service
 
 router = APIRouter()
 
-@router.get(f"{GROUP}/hellosync")
+tags: list[str] = ["Examples"]
+
+
+@router.get(
+    f"{GROUP}/hellosync",
+    tags=tags
+)
 def say_hello_sync_get():
     service: Service = SayHelloSync()
     response = service.run('John Doe')
     return response
 
-@router.post(f"{GROUP}/hellosync")
+@router.post(
+    f"{GROUP}/hellosync",
+    tags=tags
+)
 def say_hello_sync_post(params=say_hello_model):
     service: Service = SayHelloSync()
     full_name: str = params['name'] + " " + params['family']
     response = service.run(full_name)
     return response
 
-@router.get(f"{GROUP}/helloasync")
+@router.get(
+    f"{GROUP}/helloasync",
+    tags=tags
+)
 def say_hello_sync_get():
     service: Service = SayHelloAsync()
     service.run('John Doe')
     return RESP202
 
-@router.post(f"{GROUP}/helloasync")
+@router.post(
+    f"{GROUP}/helloasync",
+    tags=tags
+)
 def say_hello_sync_post(params=say_hello_model):
     service: Service = SayHelloAsync()
     full_name: str = params['name'] + " " + params['family']

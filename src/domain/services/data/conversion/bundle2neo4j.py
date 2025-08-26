@@ -1,5 +1,4 @@
-from sources.clai.back.src.domain.ports.dao.data_stream import DataStream
-from sources.clai.back.src.domain.services.sync_service import SyncService
+from src.domain.services.sync_service import SyncService
 from src.infrastructure.adapters.conversion.fhir.FHIR_to_graph import resource_to_edges, resource_to_node
 
 

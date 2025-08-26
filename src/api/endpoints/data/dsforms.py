@@ -1,8 +1,6 @@
-
 from fastapi import APIRouter, Request
 
-from src.api import RESP500
-from src.api.endpoints.data import GROUP
+from src.api.endpoints.data import GROUP, summaries, descriptions
 from src.api.model.data.dsforms import dsforms_model
 from src.config.config import config
 from src.domain.services.data.dsforms.get_ds_form_questionnaire import GetDsFormQuestionnaire
@@ -12,9 +10,16 @@ router = APIRouter()
 
 SUBGROUP: str = '/ds'
 
+tags: list[str] = ["DS Forms"]
 
-@router.get(f"{GROUP}{SUBGROUP}/questionnaire")
-def get_dsform(request: Request, params=dsforms_model):
+
+@router.get(
+    f"{GROUP}{SUBGROUP}/questionnaire",
+    tags=tags,
+    summary=summaries['ds']['questionnaire'],
+    description=descriptions['ds']['questionnaire']
+)
+def questionnaire(request: Request, params=dsforms_model):
 
     token = request.headers.get('Authorization')
 

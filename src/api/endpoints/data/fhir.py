@@ -1,20 +1,24 @@
-
 from fastapi import APIRouter, Request
 
-from src.api import RESP500
-from src.api.endpoints.data import GROUP
+from src.api.endpoints.data import GROUP, summaries, descriptions
 from src.api.model.data.fhir import patient_model
 from src.config.config import config
 from src.domain.services.data.fhir.get_fhir_patients import GetFHIRPatients
 from src.domain.services.data.fhir.get_fhir_resources import GetFHIRResources
-from src.domain.services.service import Service
 
 router = APIRouter()
 
 SUBGROUP: str = '/fhir'
 
+tags: list[str] = ["FHIR Server"]
 
-@router.get(f"{GROUP}{SUBGROUP}/Patient")
+
+@router.get(
+    f"{GROUP}{SUBGROUP}/Patient",
+    tags=tags,
+    summary=summaries['fhir']['get_patients'],
+    description=descriptions['fhir']['get_patients']
+)
 def get_patients(request: Request, params=patient_model):
 
     token = request.headers.get('Authorization')

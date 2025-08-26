@@ -1,13 +1,4 @@
-import re
-from typing import Any, cast
-from neo4j import GraphDatabase
-from pandas import DataFrame
-from typing_extensions import LiteralString
-from langchain_community.vectorstores import Neo4jVector
-from langchain_huggingface import HuggingFaceEmbeddings
-
 from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
-from src.config.config import config
 
 
 class PatientStream(Neo4jStream):

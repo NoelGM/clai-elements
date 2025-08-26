@@ -5,8 +5,7 @@ from src.api.chains.echo_chain import echo_chain
 from src.api.endpoints.data.dsforms import router as dsforms_router
 from src.api.endpoints.conversion.fhir2neo4j import router as fhir2neo4j_router
 from src.api.endpoints.data.fhir import router as fhir_router
-from src.api.endpoints.data.neo4j import router as neo4j_router
-from src.api.endpoints.examples.say_hello import router as say_hello_router
+from src.api.endpoints.data.clinical_history import router as clinical_history_router
 
 #   Instance main application
 app = FastAPI()
@@ -14,14 +13,12 @@ app = FastAPI()
 #   Record LangChain path
 add_routes(app, echo_chain, path="/echo")
 
-# Recorremos todas las rutas y las sacamos del schema
+#   Remove app routes from schema to fix problems with swagger
 for route in app.routes:
     route.include_in_schema = False
 
-#   Record project endpoints
-app.include_router(say_hello_router)
+#   Record project endpoints to be published
 app.include_router(fhir_router)
-app.include_router(neo4j_router)
+app.include_router(clinical_history_router)
 app.include_router(fhir2neo4j_router)
 app.include_router(dsforms_router)
-
