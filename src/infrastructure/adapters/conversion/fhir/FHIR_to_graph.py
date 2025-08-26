@@ -53,7 +53,7 @@ def flat_fhir_to_json_str(flat_fhir, name, fhir_str):
             {"role": "system", "content": "You are a professional translator from English to Spanish. Do not change date formats — leave them as yyyy-mm-dd."},
             {"role": "user", "content": text}])
         translated_text = response['message']['content'] if 'message' in response else text
-        return translated_text#.replace('"', '\\"')
+        return translated_text.replace('"', '\\"')
     
     output = '{' + f'name: "{name}",'
 

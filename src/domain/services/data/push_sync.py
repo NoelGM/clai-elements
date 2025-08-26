@@ -14,13 +14,13 @@ class PushSync(SyncService):
 
     def run(self, data, output_params: dict) -> dict:
 
-        self._logger.debug('Pushing data...')
+        self._logger.info('Pushing data...')
 
         success: bool = self._output_port.push(data, output_params)
 
         if not self._check_port(self._output_port) or not success:
             return RESP500
 
-        self._logger.debug('Data have been properly inserted.')
+        self._logger.info('Data have been properly inserted.')
 
         return RESP200

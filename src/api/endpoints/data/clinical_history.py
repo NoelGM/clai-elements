@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from src.api.endpoints.data import GROUP, SYMBOLS
-from src.api.model.data.neo4j import pull_model
+from src.api.endpoints.data import GROUP, SYMBOLS, summaries, descriptions
+from src.api.model.data.clinical_history import pull_model
 from src.config.config import config
 from src.domain.ports.dao.data_stream import DataStream
 from src.domain.services.data.pull_sync import PullSync
@@ -11,7 +11,15 @@ from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
 
 router = APIRouter()
 
-@router.get(f"{GROUP}/patient")
+tags: list[str] = ["Clinical history"]
+
+
+@router.get(
+    f"{GROUP}/patient",
+    tags=tags,
+    summary=summaries['history']['pull_patient'],
+    description=descriptions['history']['pull_patient']
+)
 def pull_patient(params=pull_model):
 
     adapter: DataStream = Neo4jStream(
@@ -34,7 +42,12 @@ def pull_patient(params=pull_model):
     return service.run(input_params)
 
 
-@router.post(f"{GROUP}/patient")
+@router.post(
+    f"{GROUP}/patient",
+    tags=tags,
+    summary=summaries['history']['push_patient'],
+    description=descriptions['history']['push_patient']
+)
 def push_patient(data: dict):
 
     adapter: DataStream = Neo4jStream(

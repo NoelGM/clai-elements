@@ -1,32 +1,31 @@
 from fastapi import APIRouter
 
-from src.api.endpoints.conversion import GROUP
-from src.config.config import config
-from src.domain.ports.dao.data_stream import DataStream
-from src.domain.services.data.push_sync import PushSync
-from src.domain.services.service import Service
-from src.infrastructure.adapters.conversion.fhir.FHIR_to_graph import resource_to_node
-from src.infrastructure.adapters.dao.neo4j_stream import Neo4jStream
+from src.api.endpoints.conversion import GROUP, summaries, descriptions
+from src.infrastructure.frameworks.conversion.insert_patient import InsertPatientFramework
+from src.infrastructure.frameworks.conversion.insert_patients import InsertPatientsFramework
+from src.infrastructure.frameworks.framework import NEO4J, NEO4J_PATIENT
 
 router = APIRouter()
 
+tags: list[str] = ["Data Conversion"]
 
-@router.post(f"{GROUP}/resource")
-def insert_resource(data: dict):
 
-    resource_type, resource_data = resource_to_node(data)
+@router.post(
+    f"{GROUP}/patient",
+    tags=tags,
+    summary=summaries['insert_patient'],
+    description=descriptions['insert_patient']
+)
+def insert_patient(data: dict):
+    framework = InsertPatientFramework(output_stream=NEO4J)
+    return framework.run(data)
 
-    adapter: DataStream = Neo4jStream(
-        uri=config.database.neo4j.uri,
-        user=config.database.neo4j.user,
-        password=config.database.neo4j.password
-    )
-
-    output_params = {
-        "node": resource_type,
-        "parameters": {}
-    }
-
-    service: Service = PushSync(adapter)
-
-    return service.run(resource_data, output_params)
+@router.post(
+    f"{GROUP}/patients",
+    tags=tags,
+    summary=summaries['insert_patients'],
+    description=descriptions['insert_patients']
+)
+def insert_patients(data: dict):
+    framework = InsertPatientsFramework(output_stream=NEO4J_PATIENT)
+    return framework.run(data)
