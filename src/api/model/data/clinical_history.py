@@ -2,10 +2,10 @@ from fastapi import Depends
 from pydantic import BaseModel
 
 
-def _pull_params(filter_value: str, secondary_node: str):
+def _pull_params(identifier: str, property: str):
     return {
-        "filter_value": filter_value,
-        "secondary_node": secondary_node
+        "identifier": identifier,
+        "property": property
     }
 
 
@@ -16,8 +16,8 @@ def _push_params(data: str):
 
 
 class _PullModel(BaseModel):
-    filter_value: str
-    secondary_node: str
+    identifier: str
+    property: str
 
 
 class _PushModel(BaseModel):

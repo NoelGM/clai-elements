@@ -1,3 +1,4 @@
+import ollama
 import re
 
 from src.infrastructure.adapters.conversion.fhir.FHIR_to_string import FHIR_to_string
@@ -40,36 +41,40 @@ def flatten_fhir(nested_json):
                 not any(excluded in attrib_name.lower() for excluded in EXCLUDED_SUFFIXES)
                 and attrib_name not in REDUNDANT_KEYS
             ):
+
                 out[attrib_name] = json_to_flatten
 
     flatten(nested_json)
     return out
 
 def flat_fhir_to_json_str(flat_fhir, name, fhir_str):
-    import ollama 
     
-    def translate_to_spanish(text):
-        response = ollama.chat(model="lauchacarro/qwen2.5-translator:latest", messages=[
-            {"role": "system", "content": "You are a professional translator from English to Spanish. Do not change date formats — leave them as yyyy-mm-dd."},
-            {"role": "user", "content": text}])
-        translated_text = response['message']['content'] if 'message' in response else text
-        return translated_text.replace('"', '\\"')
-    
-    output = '{' + f'name: "{name}",'
+    output = '{' + f'"name": "{name}",'
 
     if fhir_str is not None:
         fhir_str = ' '.join(fhir_str)
         fhir_str = translate_to_spanish(fhir_str)
         # print(fhir_str)
-        output += f'text: "{fhir_str}",'
+        output += f'"text": "{fhir_str}",'
 
     for attrib in flat_fhir:
-        output += f'{attrib}: "{flat_fhir[attrib]}",'
+        output += f'"{attrib}": "{flat_fhir[attrib]}",'
 
     output = output[:-1]  
     output += '}'
 
     return output
+
+def translate_to_spanish(text):
+    #   TODO NGM: check
+    try:
+        response = ollama.chat(model="lauchacarro/qwen2.5-translator:latest", messages=[
+            {"role": "system", "content": "You are a professional translator from English to Spanish. Do not change date formats — leave them as yyyy-mm-dd."},
+            {"role": "user", "content": text}])
+        translated_text = response['message']['content'] if 'message' in response else text
+        return translated_text.replace('"', '\\"')
+    except Exception as e:
+        return text
 
 # def text_summary(text):
 #

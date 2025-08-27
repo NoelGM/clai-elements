@@ -1,7 +1,8 @@
 default:
   database:
     neo4j:
-      uri: bolt://localhost:7687
+      #uri: bolt://localhost:7687
+      uri: bolt://10.86.11.43:7687
       user: neo4j
       password: 12345678a
       index_name: fhir_text_large

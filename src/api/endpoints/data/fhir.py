@@ -12,46 +12,33 @@ SUBGROUP: str = '/fhir'
 
 tags: list[str] = ["FHIR Server"]
 
-# security = HTTPBearer()
 
 @router.get(
     f"{GROUP}{SUBGROUP}/Patient",
     tags=tags,
-    summary=summaries['fhir']['get_patients'],
-    description=descriptions['fhir']['get_patients']
+    summary=summaries['fhir']['patient'],
+    description=descriptions['fhir']['patient']
 )
-def get_patients(request: Request, params=patient_model):
+def patient(request: Request, params=patient_model):
 
-    token = request.headers.get('Authorization')
+    #   Get the token.
 
-    query: str = "".join([f"{key}={params.get(key)}&" for key in list(filter(lambda x: params.get(x) is not None and x != 'id', params.keys()))])
+    token = params['token'] if params['token'] is not None else request.headers.get('Authorization')
+
+    #   Create the query params from the input.
+
+    query: str = "".join([f"{key}={params.get(key)}&" for key in list(
+        filter(lambda x: params.get(x) is not None and x not in ['id', 'token'], params.keys()))])
     query=query[:-1]
 
     resource_id: str = params.get('id') if params.get('id') is not None else ''
 
+    #   Instantiate business logic.
+
     service: GetFHIRResources = GetFHIRPatients(config.fhir.uri)
+
+    #   Execute service and return response.
 
     response = service.run(token, resource_id=resource_id, query=query)
 
     return response
-
-# @router.get(
-#     f"{GROUP}{SUBGROUP}/Patient",
-#     tags=tags,
-#     summary=summaries['fhir']['get_patients'],
-#     description=descriptions['fhir']['get_patients']
-# )
-# def get_patients(params=patient_model, credentials: HTTPAuthorizationCredentials = Depends(security)):
-#
-#     token = credentials.credentials
-#
-#     query: str = "".join([f"{key}={params.get(key)}&" for key in list(filter(lambda x: params.get(x) is not None and x != 'id', params.keys()))])
-#     query=query[:-1]
-#
-#     resource_id: str = params.get('id') if params.get('id') is not None else ''
-#
-#     service: GetFHIRResources = GetFHIRPatients(config.fhir.uri)
-#
-#     response = service.run(token, resource_id=resource_id, query=query)
-#
-#     return response

@@ -9,14 +9,16 @@ class InsertPatientsFramework(Framework):
 
     def __init__(self, output_stream: str = NEO4J_PATIENT):
         service: Service = PushSync(stream(output_stream))
-        self._output_stream: str = output_stream
-        super().__init__(service)
+        super().__init__(service, output_stream=output_stream)
 
     def run(self, data: dict) -> dict:
 
-        conversion_service: SyncService = Bundle2Neo4j()
+        #   Convert data from origin.
 
+        conversion_service: SyncService = Bundle2Neo4j()
         payload = conversion_service.run(data)
+
+        #   Save data and return response.
 
         output_params = {
             "node": payload.get("resource_type"),
@@ -26,7 +28,7 @@ class InsertPatientsFramework(Framework):
         try:
             output_params["patientId"] = data["entry"][0]["resource"]["id"]
         except Exception as e:
-            pass
+            self._logger.warning(f'Error while parsing service data: {str(e)}. Patient id will be not included in the params.')
 
         return self._service.run(payload, output_params)
 

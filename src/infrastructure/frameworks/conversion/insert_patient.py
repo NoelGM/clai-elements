@@ -10,8 +10,7 @@ class InsertPatientFramework(Framework):
 
     def __init__(self, output_stream: str = NEO4J):
         service: Service = PushSync(stream(output_stream))
-        self._output_stream: str = output_stream
-        super().__init__(service)
+        super().__init__(service, output_stream=output_stream)
 
     def run(self, data: dict) -> dict:
         resource_data, output_params = self._parse(data)

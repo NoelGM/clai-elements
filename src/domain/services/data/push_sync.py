@@ -7,20 +7,15 @@ class PushSync(SyncService):
 
     def __init__(
             self,
-            output_port: DataStream
+            output_stream: DataStream
     ):
         super().__init__("Push sync")
-        self._output_port: DataStream = output_port
+        self._output_stream: DataStream = output_stream
 
     def run(self, data, output_params: dict) -> dict:
-
         self._logger.info('Pushing data...')
-
-        success: bool = self._output_port.push(data, output_params)
-
-        if not self._check_port(self._output_port) or not success:
+        success: bool = self._output_stream.push(data, output_params)
+        if not self._check_port(self._output_stream) or not success:
             return RESP500
-
         self._logger.info('Data have been properly inserted.')
-
         return RESP200

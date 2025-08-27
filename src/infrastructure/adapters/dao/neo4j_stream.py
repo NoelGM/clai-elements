@@ -1,3 +1,4 @@
+import json
 import re
 from typing import Any, cast
 from neo4j import GraphDatabase
@@ -8,6 +9,14 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 from src.domain.ports.dao.data_stream import DataStream
 from src.config.config import config
+
+PARAMETERS: str = 'parameters'
+NODE: str = 'node'
+MAIN_NODE: str = 'main_node'
+SECONDARY_NODE: str = 'secondary_node'
+FILTER_FIELD: str = 'filter_field'
+FILTER_VALUE: str = 'filter_value'
+RESULT_FIELD: str = 'result'
 
 
 class Neo4jStream(DataStream):
@@ -34,12 +43,12 @@ class Neo4jStream(DataStream):
 
         #   Extract method parameters.
 
-        params = args.get("parameters", {})
-        main_node = args.get("main_node")
-        secondary_node = args.get("secondary_node", "")
-        filter_field = args.get("filter_field", "")
-        filter_value = args.get("filter_value", "")
-        result_field = args.get("result", "text")
+        params = args.get(PARAMETERS, {})
+        main_node = args.get(MAIN_NODE)
+        secondary_node = args.get(SECONDARY_NODE, "")
+        filter_field = args.get(FILTER_FIELD, "")
+        filter_value = args.get(FILTER_VALUE, "")
+        result_field = args.get(RESULT_FIELD, "text")
 
         #   Check whether all properties are enabled at the data model.
 
@@ -99,6 +108,9 @@ class Neo4jStream(DataStream):
         node = args.get("node")
 
         #   Create query for nodes.
+
+        if isinstance(data, str):
+            data = json.loads(data)
 
         for resource_type, content in zip(node, data["resource_data"]):
 
