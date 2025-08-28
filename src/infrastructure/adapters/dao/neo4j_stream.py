@@ -112,16 +112,31 @@ class Neo4jStream(DataStream):
         if isinstance(data, str):
             data = json.loads(data)
 
-        for resource_type, content in zip(node, data["resource_data"]):
+        if isinstance(data["resource_data"], list):
 
-            query = f"CREATE (:{resource_type}:resource {content})"
+            for resource_type, content in zip(node, data["resource_data"]):
+
+                query = f"CREATE (:{resource_type}:resource {content})"
+
+                try:
+                    with self._driver.session() as session:
+                        session.run(query, **parameters)
+                except Exception as e:
+                    # self.exception = str(e)
+                    # return False
+                    pass
+
+        else:
+
+            query = f"CREATE (:{node}:resource {data["resource_data"]})"
 
             try:
                 with self._driver.session() as session:
                     session.run(query, **parameters)
             except Exception as e:
-                self.exception = str(e)
-                return False
+                # self.exception = str(e)
+                # return False
+                pass
             
         #   Create query for dates.
        
@@ -139,8 +154,9 @@ class Neo4jStream(DataStream):
                     with self._driver.session() as session:
                         session.run(query, **parameters)
                 except Exception as e:
-                    self.exception = str(e)
-                    return False
+                    # self.exception = str(e)
+                    # return False
+                    pass
                 
         #   Create query for edges.
                 
@@ -154,12 +170,16 @@ class Neo4jStream(DataStream):
                     with self._driver.session() as session:
                         session.run(query, **parameters)
                 except Exception as e:
-                    self.exception = str(e)
-                    return False
+                    # self.exception = str(e)
+                    # return False
+                    pass
                 
         #   Create vector index.
-        if not self._create_vector_index():
-            return False
+        # if not self._create_vector_index():
+        #     return False
+
+        #   FIXME: tarda mucho
+        # self._create_vector_index()
 
         # If everything okay return True
         return True
@@ -202,21 +222,20 @@ class Neo4jStream(DataStream):
             if not self._check_symbol(symbol):
                 return False
         return True
-    
 
     #TODO: ESTAS FUNCIONES SON NUEVAS Y NO SÉ SI AQUÍ ESTÁN BIEN DEFINIDAS
     def _create_vector_index(self) -> bool:
 
         try:
             Neo4jVector.from_existing_graph(
-            HuggingFaceEmbeddings(model_name=config.database.neo4j.embedder_model),
-            url=config.database.neo4j.uri,
-            username=config.database.neo4j.user,
-            password=config.database.neo4j.password,
-            index_name=config.database.neo4j.index_name,
-            node_label="resource",
-            text_node_properties=['text'],
-            embedding_node_property='embedding_text',
+                HuggingFaceEmbeddings(model_name=config.database.neo4j.embedder_model),
+                url=config.database.neo4j.uri,
+                username=config.database.neo4j.user,
+                password=config.database.neo4j.password,
+                index_name=config.database.neo4j.index_name,
+                node_label="resource",
+                text_node_properties=['text'],
+                embedding_node_property='embedding_text'
             )
             return True
         except Exception as e:

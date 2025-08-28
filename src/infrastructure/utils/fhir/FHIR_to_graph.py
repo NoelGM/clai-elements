@@ -1,7 +1,7 @@
 import ollama
 import re
 
-from src.infrastructure.adapters.conversion.fhir.FHIR_to_string import FHIR_to_string
+from src.infrastructure.utils.fhir.FHIR_to_string import FHIR_to_string
 
 camel_pattern1 = re.compile(r'(.)([A-Z][a-z]+)')
 camel_pattern2 = re.compile(r'([a-z0-9])([A-Z])')
@@ -49,16 +49,16 @@ def flatten_fhir(nested_json):
 
 def flat_fhir_to_json_str(flat_fhir, name, fhir_str):
     
-    output = '{' + f'"name": "{name}",'
+    output = '{' + f'name: "{name}",'
 
     if fhir_str is not None:
         fhir_str = ' '.join(fhir_str)
         fhir_str = translate_to_spanish(fhir_str)
         # print(fhir_str)
-        output += f'"text": "{fhir_str}",'
+        output += f'text: "{fhir_str}",'
 
     for attrib in flat_fhir:
-        output += f'"{attrib}": "{flat_fhir[attrib]}",'
+        output += f'{attrib}: "{flat_fhir[attrib]}",'
 
     output = output[:-1]  
     output += '}'

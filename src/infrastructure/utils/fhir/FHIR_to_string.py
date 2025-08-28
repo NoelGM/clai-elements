@@ -1,6 +1,6 @@
 import re
 
-from src.infrastructure.adapters.conversion.fhir.FHIR_flattener import flatten_fhir, flat_to_string
+from src.infrastructure.utils.fhir.FHIR_flattener import flatten_fhir, flat_to_string
 
 what_to_call_resource = 'entry'
 
