@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+from src.config.logger_config import logger
 from src.domain.ports.dao.data_stream import DataStream
 from src.domain.services import STATUS_IDLE
-from src.config.logger_config import logger
 
 
 def _job_id() -> int:
