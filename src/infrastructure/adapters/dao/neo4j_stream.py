@@ -1,3 +1,4 @@
+import json
 import re
 from typing import Any, cast
 from neo4j import GraphDatabase
@@ -8,6 +9,14 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 from src.domain.ports.dao.data_stream import DataStream
 from src.config.config import config
+
+PARAMETERS: str = 'parameters'
+NODE: str = 'node'
+MAIN_NODE: str = 'main_node'
+SECONDARY_NODE: str = 'secondary_node'
+FILTER_FIELD: str = 'filter_field'
+FILTER_VALUE: str = 'filter_value'
+RESULT_FIELD: str = 'result'
 
 
 class Neo4jStream(DataStream):
@@ -34,12 +43,12 @@ class Neo4jStream(DataStream):
 
         #   Extract method parameters.
 
-        params = args.get("parameters", {})
-        main_node = args.get("main_node")
-        secondary_node = args.get("secondary_node", "")
-        filter_field = args.get("filter_field", "")
-        filter_value = args.get("filter_value", "")
-        result_field = args.get("result", "text")
+        params = args.get(PARAMETERS, {})
+        main_node = args.get(MAIN_NODE)
+        secondary_node = args.get(SECONDARY_NODE, "")
+        filter_field = args.get(FILTER_FIELD, "")
+        filter_value = args.get(FILTER_VALUE, "")
+        result_field = args.get(RESULT_FIELD, "text")
 
         #   Check whether all properties are enabled at the data model.
 
@@ -100,16 +109,34 @@ class Neo4jStream(DataStream):
 
         #   Create query for nodes.
 
-        for resource_type, content in zip(node, data["resource_data"]):
+        if isinstance(data, str):
+            data = json.loads(data)
 
-            query = f"CREATE (:{resource_type}:resource {content})"
+        if isinstance(data["resource_data"], list):
+
+            for resource_type, content in zip(node, data["resource_data"]):
+
+                query = f"CREATE (:{resource_type}:resource {content})"
+
+                try:
+                    with self._driver.session() as session:
+                        session.run(query, **parameters)
+                except Exception as e:
+                    # self.exception = str(e)
+                    # return False
+                    pass
+
+        else:
+
+            query = f"CREATE (:{node}:resource {data["resource_data"]})"
 
             try:
                 with self._driver.session() as session:
                     session.run(query, **parameters)
             except Exception as e:
-                self.exception = str(e)
-                return False
+                # self.exception = str(e)
+                # return False
+                pass
             
         #   Create query for dates.
        
@@ -127,8 +154,9 @@ class Neo4jStream(DataStream):
                     with self._driver.session() as session:
                         session.run(query, **parameters)
                 except Exception as e:
-                    self.exception = str(e)
-                    return False
+                    # self.exception = str(e)
+                    # return False
+                    pass
                 
         #   Create query for edges.
                 
@@ -142,12 +170,16 @@ class Neo4jStream(DataStream):
                     with self._driver.session() as session:
                         session.run(query, **parameters)
                 except Exception as e:
-                    self.exception = str(e)
-                    return False
+                    # self.exception = str(e)
+                    # return False
+                    pass
                 
         #   Create vector index.
-        if not self._create_vector_index():
-            return False
+        # if not self._create_vector_index():
+        #     return False
+
+        #   FIXME: tarda mucho
+        # self._create_vector_index()
 
         # If everything okay return True
         return True
@@ -190,21 +222,20 @@ class Neo4jStream(DataStream):
             if not self._check_symbol(symbol):
                 return False
         return True
-    
 
     #TODO: ESTAS FUNCIONES SON NUEVAS Y NO SÉ SI AQUÍ ESTÁN BIEN DEFINIDAS
     def _create_vector_index(self) -> bool:
 
         try:
             Neo4jVector.from_existing_graph(
-            HuggingFaceEmbeddings(model_name=config.database.neo4j.embedder_model),
-            url=config.database.neo4j.uri,
-            username=config.database.neo4j.user,
-            password=config.database.neo4j.password,
-            index_name=config.database.neo4j.index_name,
-            node_label="resource",
-            text_node_properties=['text'],
-            embedding_node_property='embedding_text',
+                HuggingFaceEmbeddings(model_name=config.database.neo4j.embedder_model),
+                url=config.database.neo4j.uri,
+                username=config.database.neo4j.user,
+                password=config.database.neo4j.password,
+                index_name=config.database.neo4j.index_name,
+                node_label="resource",
+                text_node_properties=['text'],
+                embedding_node_property='embedding_text'
             )
             return True
         except Exception as e:

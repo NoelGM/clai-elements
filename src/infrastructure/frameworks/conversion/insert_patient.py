@@ -1,30 +1,33 @@
 from typing import Any
 
+from src.domain.services.conversion.resource2neo4j import Resource2Neo4j
 from src.domain.services.data.push_sync import PushSync
 from src.domain.services.service import Service
-from src.infrastructure.adapters.conversion.fhir.FHIR_to_graph import resource_to_node
-from src.infrastructure.frameworks.framework import Framework, NEO4J, stream
+from src.domain.services.sync_service import SyncService
+from src.infrastructure.adapters.conversion.fhir2neo4j import FHIR2Neo4jConverter
+from src.infrastructure.frameworks.framework import Framework, stream, NEO4J_PATIENT
 
 
 class InsertPatientFramework(Framework):
 
-    def __init__(self, output_stream: str = NEO4J):
+    def __init__(self, output_stream: str = NEO4J_PATIENT):
         service: Service = PushSync(stream(output_stream))
-        self._output_stream: str = output_stream
-        super().__init__(service)
+        super().__init__(service, output_stream=output_stream)
 
     def run(self, data: dict) -> dict:
-        resource_data, output_params = self._parse(data)
-        return self._service.run(resource_data, output_params)
 
-    def _parse(self, data) -> (Any, Any):
-        resource_data, output_params = None, None
-        if self._output_stream == NEO4J:
-            resource_type, resource_data = resource_to_node(data)
-            output_params = {
-                "node": resource_type,
-                "parameters": {}
-            }
-        return resource_data, output_params
+        #   Convert data from origin.
+
+        conversion_service: SyncService = Resource2Neo4j(FHIR2Neo4jConverter())
+        payload = conversion_service.run(data)
+
+        #   Save data and return response.
+
+        output_params = {
+            "node": payload.get("resource_type"),
+            "parameters": {}
+        }
+
+        return self._service.run(payload, output_params)
 
 

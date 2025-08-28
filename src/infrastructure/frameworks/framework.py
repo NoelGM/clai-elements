@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from src.config.config import config
 from src.config.logger_config import logger
@@ -10,13 +11,18 @@ from src.infrastructure.adapters.dao.patient_stream import Neo4jPatientStream
 NEO4J: str = 'neo4j'
 NEO4J_PATIENT: str = 'neo4j_patient'
 
-def stream(label: str) -> DataStream:
+def stream(label: str, args: Any = None) -> DataStream:
     adapter: DataStream = None
     if label == NEO4J:
         adapter: DataStream = Neo4jStream(
             uri=config.database.neo4j.uri,
             user=config.database.neo4j.user,
             password=config.database.neo4j.password
+        ) if args is None else Neo4jStream(
+            uri=config.database.neo4j.uri,
+            user=config.database.neo4j.user,
+            password=config.database.neo4j.password,
+            symbols=args
         )
     elif label == NEO4J_PATIENT:
         adapter: DataStream = Neo4jPatientStream(
@@ -32,9 +38,13 @@ class Framework(ABC):
     def __init__(
             self,
             service: Service,
+            input_stream: str = None,
+            output_stream: str = None,
             logger_ = None
     ):
         self._service: Service = service
+        self._output_stream: str = output_stream
+        self._input_stream: str = input_stream
         self._logger = logger.bind(category="services") if logger_ is None else logger_
 
     def service(self) -> Service:

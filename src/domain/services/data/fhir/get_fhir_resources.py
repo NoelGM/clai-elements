@@ -21,11 +21,14 @@ class GetFHIRResources(SyncService, ABC):
 
     def run(self, token: str, resource_id: str = '', query: str = '') -> dict:
 
-        # Si el token ya empieza por 'Bearer', usarlo tal cual; si no, anteponer 'Bearer '
-        if token.lower().startswith('bearer'):
-            auth_header = token
-        else:
-            auth_header = f"Bearer {token}"
+        if token is None:
+
+            self._logger.error('No authorization token provided.')
+
+            return RESP500
+
+        auth_header = token if token.lower().startswith('bearer') else f"Bearer {token}"
+
         headers = {
             "Authorization": auth_header,
             "Accept": "application/json"

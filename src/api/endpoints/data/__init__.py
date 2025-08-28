@@ -2,13 +2,6 @@ from src.api.endpoints import BASE
 
 GROUP: str = BASE + '/data'
 
-SYMBOLS: list = [
-    "Patient",
-    "id",
-    "AllergyIntolerance",
-    "text"
-]
-
 #################
 #   Summaries   #
 #################
@@ -18,7 +11,7 @@ _ds_summaries: dict = {
 }
 
 _fhir_summaries: dict = {
-    'get_patients': 'Get a patient or a patients boundle from a FHIR server.'
+    'patient': 'Get a patient or a patients boundle from a FHIR server.'
 }
 
 _history_summaries: dict = {
@@ -45,12 +38,13 @@ _ds_descriptions: dict = {
 }
 
 _fhir_descriptions: dict = {
-    'get_patients': """
+    'patient': """
         Send query to a FHIR server to obtain data from a patient or a patients bundle.
         \n\t- Input: the following optional parameters:
         \n\t\t- the patient id (if not provided, patient boundle will be return)
         \n\t\t- the patient name (if provided, patient boundle matching such name will be return)
         \n\t\t- the patient family name (if provided, patient boundle matching such family name will be return)
+        \n\t\t- the authorization token to access the FHIR server (if not provided, system will try to find at the request header)
         \n\t- Output: response from the FHIR server.
     """
 }
@@ -59,8 +53,8 @@ _history_descriptions: dict = {
     'pull_patient': """
         Get data from a patient from the project database stipulating filters and secondary node.
         \n\t- Input: the following parameters:
-        \n\t\t- filter value: is the patient id
-        \n\t\t- secondary node: is the data node to be recovered, for exxample, AllergyIntolerance
+        \n\t\t- identifier: is the patient id, for example, AC1743089727161
+        \n\t\t- property: is the data node to be recovered, for example, AllergyIntolerance
         \n\t- Output: data found in the database.
     """,
     'push_patient': """
