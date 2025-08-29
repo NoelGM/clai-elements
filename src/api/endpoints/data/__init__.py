@@ -16,7 +16,8 @@ _fhir_summaries: dict = {
 
 _history_summaries: dict = {
     'pull_patient': 'Extract patient data from the project database.',
-    'push_patient': 'Insert patient data into the project database.'
+    'push_patient': 'Insert patient data into the project database.',
+    'load': 'Extract a patient from the FHIR server and insert into the project database.'
 }
 
 summaries: dict = {
@@ -59,6 +60,11 @@ _history_descriptions: dict = {
     """,
     'push_patient': """
         Insert a new patient to the project database given by an string included the json formatted patient data. TODO: Completa @Martin.
+    """,
+    'load': """
+    Get data from a patient, given by its id, from the FHIR server, format these data according to the project database estipulation, and insert into such database.
+    \n\t- Input: the id of the patient within the FHIR server.
+    \n\t- Output: response from the persistence operation.
     """
 }
 

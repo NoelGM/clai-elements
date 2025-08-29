@@ -22,6 +22,10 @@ class Agent(ABC):
     def execute(self, *args, **kwargs) -> Any:
         raise NotImplementedError("Method not implemented at the abstract level.")
 
+    # TODO sync def async_execute(self,
+
     @abstractmethod
     def call_llm(self, *args, **kwargs) -> dict:
         raise NotImplementedError("Method not implemented at the abstract level.")
+
+
