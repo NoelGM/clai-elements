@@ -12,6 +12,8 @@ from src.infrastructure.utils.promts.RouterPrompts import router_obtener_prompt
 #   TODO NGM extraer estos valores de la configuración. Organizar tambien la propagación de verify y timeout para los clientes
 protocol = ''
 hostname = ''
+verify = False
+timeout = 30
 
 
 class DsformsAgent(LlamaAgent):
@@ -52,7 +54,7 @@ class DsformsAgent(LlamaAgent):
 
     async def consulta_forms(self, state: EstadoGrafo):
         # Instancia de DsformsClient
-        dsforms_client = DsformsClient(protocol, hostname, self.token)
+        dsforms_client = DsformsClient(protocol, hostname, self.token, verify, timeout)
         try:
             path = f"/dsforms/fhir/rest/Questionnaire/{self.resourceId}?_format=json"
             response = await dsforms_client.get(path=path)

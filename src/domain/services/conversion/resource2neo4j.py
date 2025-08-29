@@ -13,6 +13,8 @@ class Resource2Neo4j(SyncService):
 
     def run(self, data: dict) -> dict:
 
+        self._logger.info('Running Resource2Neo4j conversion service.')
+
         resource_type, resource_data = self._converter.node(data)
 
         node_edges, node_dates = self._converter.edges(data)
