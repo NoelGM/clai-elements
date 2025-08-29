@@ -16,6 +16,7 @@ class LlamaAgent(Agent, ABC):
     ):
         super().__init__(name, max_retries=max_retries, verbose=verbose, logger_=logger_)
 
+    # TODO probablemente se elimine este método, por lo tanto no haría falta tampoco este nivel de abstracción y se eliminaría la clase LLamaAgent
     def call_llm(self, messages, temperature=0.7, max_tokens=150):
         """
         Calls the Llama model via Ollama and retrieves the response.
