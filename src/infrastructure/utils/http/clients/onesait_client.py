@@ -16,7 +16,8 @@ class OnesaitClient(HttpClient):
         self.protocol = protocol
         self.hostname = hostname
         if not self.protocol or not self.hostname:
-            raise ValueError("Las variables de entorno 'general.protocol' y/o 'general.hostname' no están definidas.")
+            # raise ValueError("Las variables de entorno 'general.protocol' y/o 'general.hostname' no están definidas.")
+            raise ValueError("Protocol and/or hostname have not been defined.")
         self.verify = verify # os.getenv("AUTH_CERTIFICATE_VALIDATE") == "1"
         self.timeout = timeout # float(os.getenv("HTTP_CLIENT_TIMEOUT", 10.0))
         # Construimos la URL base (permitimos override)

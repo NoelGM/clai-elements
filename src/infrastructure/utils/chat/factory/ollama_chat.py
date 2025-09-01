@@ -44,16 +44,25 @@ class OllamaChat(InterfaceChat):
     @classmethod
     def load_model(cls) -> None:
         try:
-            #   TODO NGM cambiar datos procecendentes de env
+            #   TODO NGM cambiar datos procecendentes de env y ponerlos como varaibles de clase
 
-            # DEFAULT_OLLAMA_MODEL_KEEP_ALIVE = 43200
-            # DEFAULT_OLLAMA_MODEL_TEMPERATURE = 0.5
-            # DEFAULT_OLLAMA_MODEL_TOP_P = 0.75
-            # DEFAULT_OLLAMA_MODEL_TOP_K = 15
-            # DEFAULT_OLLAMA_MODEL_CONTEXT_SIZE = 17000
-            # DEFAULT_OLLAMA_MODEL_VERBOSE = True
+            cls.model = "qwen3:0.6b" # os.getenv("DEFAULT_OLLAMA_MODEL")
 
-            cls.model = "cogito:latest" # os.getenv("DEFAULT_OLLAMA_MODEL")
+            """
+            cogito:latest                            75b508ddece1    4.9 GB    5 days ago
+            qwen3:0.6b                               7df6b6e09427    522 MB    5 days ago
+            cogito:3b                                bd144357d717    2.2 GB    2 weeks ago
+            alibayram/medgemma:4b                    970df2db7db7    2.5 GB    6 weeks ago
+            granite3.3:8b                            fd429f23b909    4.9 GB    3 months ago
+            nomic-embed-text:latest                  0a109f422b47    274 MB    3 months ago
+            gemma2:2b                                8ccf136fdd52    1.6 GB    4 months ago
+            qwen2.5:1.5b                             65ec06548149    986 MB    4 months ago
+            lauchacarro/qwen2.5-translator:latest    0a947c33631d    986 MB    5 months ago
+            qwen2.5:7b                               845dbda0ea48    4.7 GB    6 months ago
+            llama3:latest                            365c0bd3c000    4.7 GB    15 months ago
+
+            """
+
             cls.temperature = 0.5 # os.getenv("DEFAULT_OLLAMA_MODEL_TEMPERATURE")
             cls.context_size = 17000 # os.getenv("DEFAULT_OLLAMA_MODEL_CONTEXT_SIZE")
             cls.top_k = 15 # os.getenv("DEFAULT_OLLAMA_MODEL_TOP_K")
