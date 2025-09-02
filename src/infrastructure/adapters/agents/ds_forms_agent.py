@@ -10,8 +10,8 @@ from src.infrastructure.utils.http.clients.dsforms_client import DsformsClient
 from src.infrastructure.utils.promts.RouterPrompts import router_obtener_prompt
 
 #   TODO NGM extraer estos valores de la configuración. Organizar tambien la propagación de verify y timeout para los clientes
-protocol = ''
-hostname = ''
+protocol = 'https'   # NGM en la versión de la POC lo extrae de configuracion en la clase onesaitclient: self.protocol = Config.get_property('general.protocol')
+hostname = 'healthcare.cwbyminsait.com'   # NGM idem como protocol
 verify = False
 timeout = 30
 
@@ -74,7 +74,7 @@ class DsformsAgent(LlamaAgent):
         """
         # Usamos un prompt específico para transformar la pregunta
         transformar_template = router_obtener_prompt(self.modelo_usado.model, "transformar_hc")
-        router_pregunta = transformar_template | self.modelo_usado_json | JsonOutputParser()
+        router_pregunta = transformar_template | self.modelo_usado_json | JsonOutputParser()    #   FIXME NGM este comando da fallo cuando se usa el modelo qwen3:0.6b
         pregunta_transformada = router_pregunta.invoke({"question": question})["hc"]
         return pregunta_transformada
 

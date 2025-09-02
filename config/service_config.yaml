@@ -1,7 +1,6 @@
 default:
   database:
     neo4j:
-      #uri: bolt://localhost:7687
       uri: bolt://10.86.11.43:7687
       user: neo4j
       password: 12345678a
@@ -12,6 +11,10 @@ default:
     uri: https://healthcare.cwbyminsait.com/ehrserver/fhir
   dsforms:
     uri: https://healthcare.cwbyminsait.com/dsforms/fhir/rest
+  llm:
+    ollama:
+      host: http://10.86.11.43
+      port: 11434
 
 local_ngm:
   service:
