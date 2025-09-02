@@ -1,12 +1,10 @@
-from abc import ABC
-
 import requests
 
 from src.api import RESP500
 from src.domain.services.sync_service import SyncService
 
 
-class GetFHIRResources(SyncService, ABC):
+class GetFHIRResources(SyncService):
 
     def __init__(
             self,
