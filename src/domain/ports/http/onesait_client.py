@@ -1,18 +1,17 @@
 from typing import Any, Dict, Optional
 
-from src.infrastructure.utils.http.clients.http_client import HttpClient
+from src.domain.ports.http.http_client import HttpClient
 
 
 class OnesaitClient(HttpClient):
+
     def __init__(
             self,
-            protocol,
-            hostname,
+            protocol: str,
+            hostname: str,
             verify: bool = False,
             timeout: float = 10.0
     ):
-        # self.protocol = Config.get_property('general.protocol')
-        # self.hostname = Config.get_property('general.hostname')
         self.protocol = protocol
         self.hostname = hostname
         if not self.protocol or not self.hostname:

@@ -5,7 +5,7 @@ class InterfaceChat(ABC):
 
     @classmethod
     @abstractmethod
-    def load_model(cls) -> str:
+    def load_model(cls, url: str, model: str) -> str:
         """Devuelve el modelo de chat actual."""
         pass
 
