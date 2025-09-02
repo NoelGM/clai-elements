@@ -14,7 +14,7 @@ def _push_params(data: str):
         "data": data
     }
 
-def _load_resource_params(identifier: str, token: str):
+def _load_resource_params(identifier: str, token: str = None):
     return {
         'identifier': identifier,
         'token': token
@@ -33,7 +33,6 @@ class _PushModel(BaseModel):
 class _LoadResourceModel(BaseModel):
     identifier: str
     token: str = None
-    #   TODO poner la lista de recursos FHIR que se quieren insertar junto con el paciente
 
 
 pull_model: _PullModel = Depends(_pull_params)
