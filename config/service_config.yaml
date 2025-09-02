@@ -11,10 +11,13 @@ default:
     uri: https://healthcare.cwbyminsait.com/ehrserver/fhir
   dsforms:
     uri: https://healthcare.cwbyminsait.com/dsforms/fhir/rest
-  llm:
-    ollama:
-      host: http://10.86.11.43
-      port: 11434
+  chat:
+    provider: ollama
+    model: cogito:latest
+    max_retries: 2
+    verbose: True
+    max_messages: 10
+    uri: http://10.86.11.43:11434
 
 local_ngm:
   service:

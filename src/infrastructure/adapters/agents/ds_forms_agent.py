@@ -5,29 +5,36 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langgraph.graph import END, StateGraph
 
 from src.domain.model.agents.graph_status import EstadoGrafo
-from src.infrastructure.adapters.agents.llama_agent import LlamaAgent
-from src.infrastructure.utils.http.clients.dsforms_client import DsformsClient
+from src.domain.ports.agents.agent import Agent
+from src.infrastructure.adapters.http.ds_forms_client import DsFormsClient
 from src.infrastructure.utils.promts.RouterPrompts import router_obtener_prompt
 
-#   TODO NGM extraer estos valores de la configuración. Organizar tambien la propagación de verify y timeout para los clientes
-protocol = 'https'   # NGM en la versión de la POC lo extrae de configuracion en la clase onesaitclient: self.protocol = Config.get_property('general.protocol')
-hostname = 'healthcare.cwbyminsait.com'   # NGM idem como protocol
-verify = False
-timeout = 30
 
+class DsFormsAgent(Agent):
 
-class DsformsAgent(LlamaAgent):
-
-    def __init__(self):
+    def __init__(
+            self,
+            protocol: str = 'https',  # NGM en la versión de la POC lo extrae de configuracion en la clase onesaitclient: self.protocol = Config.get_property('general.protocol')
+            hostname: str = 'healthcare.cwbyminsait.com',  # NGM idem como protocol
+            verify: bool = False,
+            timeout: int = 30
+    ):
 
         super().__init__('DS From Agent')
+
+        self.protocol: str = protocol
+        self.hostname: str = hostname
+        self.verify: bool = verify
+        self.timeout: int = timeout
 
         self.historial = []
         self.contexto = ""
         self.pregunta = ""
         self.patient_name = ""
         self.patient_id = ""
+
         # Construcción de los nodos del grafo de estado
+
         graph = StateGraph(EstadoGrafo)
         graph.set_entry_point("consulta_forms")
         graph.add_node("consulta_forms", self.consulta_forms)
@@ -36,7 +43,9 @@ class DsformsAgent(LlamaAgent):
         graph.add_node("generar", self.generar)
         graph.add_edge("procesar", "generar")
         graph.add_edge("generar", END)
+
         self.logger.info(f"__init__ graph.compile() ")
+
         self.graph = graph.compile()
 
     def build_history_from_frontend(self, messages: list[BaseMessage]) -> ChatMessageHistory:
@@ -54,10 +63,10 @@ class DsformsAgent(LlamaAgent):
 
     async def consulta_forms(self, state: EstadoGrafo):
         # Instancia de DsformsClient
-        dsforms_client = DsformsClient(protocol, hostname, self.token, verify, timeout)
+        self.client = DsFormsClient(self.protocol, self.hostname, self.token, self.verify, self.timeout)
         try:
             path = f"/dsforms/fhir/rest/Questionnaire/{self.resourceId}?_format=json"
-            response = await dsforms_client.get(path=path)
+            response = await self.client.get(path=path)
         except Exception as e:
             # Cualquier otro fallo
             self.logger.error(f"Error inesperado: {e}")
@@ -243,7 +252,7 @@ class DsformsAgent(LlamaAgent):
         state["generation"] = self.generacion
         return state
 
-    def configureLLmChat(self, chat, patientId, token, resourceId, resourceType):
+    def configure_chat(self, chat, patient_id, token, resource_id, resource_type):
         self.modelo_usado = chat
         self.logger.info(f"chat model: {self.modelo_usado}")
         self.modelo_usado_json = chat
@@ -253,9 +262,9 @@ class DsformsAgent(LlamaAgent):
         self.pregunta = ""
         # self.history=history
         # self.patient_name=patient["patient_name"]
-        self.patientId = patientId
-        self.resourceId = resourceId
-        self.resourceType = resourceType
+        self.patientId = patient_id
+        self.resourceId = resource_id
+        self.resourceType = resource_type
         self.token = token
 
     def execute(self, chat, question, patient, token, resourceId, resourceType, history=None):
@@ -287,7 +296,7 @@ class DsformsAgent(LlamaAgent):
 
     async def async_execute(self, chat, question, patientId, token, resourceId, resourceType, history=None,
                             contexto_hc=""):
-        self.configureLLmChat(chat, patientId, token, resourceId, resourceType)
+        self.configure_chat(chat, patientId, token, resourceId, resourceType)
         final_state = await self.graph.ainvoke({
             "question": question,
             "token": token,
@@ -300,4 +309,4 @@ class DsformsAgent(LlamaAgent):
             "generacion": self.generacion,
             "originData": self.originData,
             "contextUsed": context_used
-            }
+        }

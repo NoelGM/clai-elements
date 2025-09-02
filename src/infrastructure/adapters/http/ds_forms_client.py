@@ -1,9 +1,9 @@
 import httpx
 
-from src.infrastructure.utils.http.clients.onesait_client import OnesaitClient
+from src.domain.ports.http.onesait_client import OnesaitClient
 
 
-class DsformsClient(OnesaitClient):
+class DsFormsClient(OnesaitClient):
     """
     Cliente especializado para el endpoint FHIR /CodeSystem de DSForms.
     Hereda la funcionalidad genérica de OnesaitClient y añade métodos FHIR.
@@ -21,13 +21,19 @@ class DsformsClient(OnesaitClient):
         self.headers = {"Authorization": token}
         super().__init__(protocol, hostname, verify=verify, timeout=timeout)
 
-    async def get(self, path: str, params: dict = None, headers: dict = None) -> dict:
+    async def get(
+            self,
+            path: str,
+            params: dict = None,
+            headers: dict = None
+    ) -> dict:
         response = await super().get(path, params=params, headers=self.headers)
         # Si la respuesta es un objeto httpx.Response, obtener el json
         if hasattr(response, 'json'):
             return response.json()
         return response
 
+    #   FIXME NGM actualiza los parámetros y compara con el código original
     async def post(self, url: str, data: dict = None) -> dict:
         async with httpx.AsyncClient(headers=self.headers, verify=False) as client:
             payload = data if data is not None else {
