@@ -46,7 +46,7 @@ class OllamaChat(InterfaceChat):
         try:
             #   TODO NGM cambiar datos procecendentes de env y ponerlos como varaibles de clase
 
-            cls.model = "qwen3:0.6b" # os.getenv("DEFAULT_OLLAMA_MODEL")
+            cls.model = "cogito:latest" # os.getenv("DEFAULT_OLLAMA_MODEL")
 
             """
             cogito:latest                            75b508ddece1    4.9 GB    5 days ago
@@ -68,7 +68,7 @@ class OllamaChat(InterfaceChat):
             cls.top_k = 15 # os.getenv("DEFAULT_OLLAMA_MODEL_TOP_K")
             cls.top_p = 0.75 # os.getenv("DEFAULT_OLLAMA_MODEL_TOP_P")
             cls.keep_alive = 43200 # int(os.getenv("DEFAULT_OLLAMA_MODEL_KEEP_ALIVE", 0))
-            cls.base_url = 'http://localhost:11434' # 0.5 # os.getenv("OLLAMA_BASE_URL")
+            cls.base_url = 'http://10.86.11.43:11434' # 0.5 # os.getenv("OLLAMA_BASE_URL")
             cls.verbose = True # os.getenv("DEFAULT_OLLAMA_MODEL_VERBOSE")
 
             available_models = cls.get_models()
